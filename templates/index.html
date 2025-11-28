@@ -1020,7 +1020,12 @@
         }
         
         function exportBindings() {
-            const dataStr = JSON.stringify(currentBindings, null, 2);
+            // 导出完整的数据结构（包含bindings和releaseKey）
+            const outputData = {
+                bindings: currentBindings,
+                releaseKey: releaseKeySignal || null
+            };
+            const dataStr = JSON.stringify(outputData, null, 2);
             const dataBlob = new Blob([dataStr], {type: 'application/json'});
             const url = URL.createObjectURL(dataBlob);
             const link = document.createElement('a');
@@ -1040,7 +1045,21 @@
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         try {
-                            currentBindings = JSON.parse(event.target.result);
+                            const data = JSON.parse(event.target.result);
+
+                            // 兼容两种格式：
+                            // 1. 新格式：{ bindings: {...}, releaseKey: "0x..." }
+                            // 2. 旧格式：直接是绑定对象 {...}
+                            if (data.bindings) {
+                                // 新格式
+                                currentBindings = data.bindings;
+                                releaseKeySignal = data.releaseKey || null;
+                            } else {
+                                // 旧格式
+                                currentBindings = data;
+                                releaseKeySignal = null;
+                            }
+
                             updateBindingsList();
                             updateButtonStates();
                             updateStatistics();

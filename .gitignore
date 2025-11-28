@@ -27,6 +27,7 @@ logs/
 # 系统文件
 .DS_Store
 Thumbs.db
+._*
 
 # IDE
 .vscode/
@@ -35,6 +36,8 @@ Thumbs.db
 
 # 项目特定
 signal_bindings.json
+*1294.json
+test_*.json
 *.pid
 
 # 测试
