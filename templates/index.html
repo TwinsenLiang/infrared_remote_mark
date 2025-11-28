@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="h-full bg-gray-50 dark:bg-gray-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苹果A1294遥控器红外信号录制</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        apple: {
+                            gray: '#8e8e93',
+                            silver: '#c7c7cc',
+                            blue: '#007aff',
+                            green: '#34c759',
+                            orange: '#ff9500',
+                            red: '#ff3b30',
+                            purple: '#af52de'
+                        }
+                    },
+                    animation: {
+                        'pulse-flash': 'pulse-flash 0.6s ease-in-out',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        'pulse-flash': {
+                            '0%': { backgroundColor: 'transparent' },
+                            '50%': { backgroundColor: 'rgba(59, 130, 246, 0.3)' }, // blue-500/30
+                            '100%': { backgroundColor: 'transparent' }
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom animations and transitions */
+        .button-overlay {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .button-overlay:hover {
+            transform: scale(1.05);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl backdrop-blur-md">
+                        <i class="fas fa-remote text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight">苹果A1294遥控器</h1>
+                        <p class="text-blue-100 text-sm">红外信号录制系统</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-sm font-medium">系统运行中</span>
+                    </div>
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Top Section: Remote and Debug -->
+        <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 mb-8">
+            
+            <!-- Remote Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 px-6 py-4 border-b border-gray-200 dark:border-gray-600 transition-colors duration-300">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg transition-colors duration-300">
+                                <i class="fas fa-tv text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">遥控器</h2>
+                        </div>
+                        <button onclick="resetRemote()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div id="svgContainer" class="relative inline-block mx-auto">
+                        <!-- SVG will be loaded here -->
+                    </div>
+                    
+                    
+                </div>
+            </div>
+
+            <!-- Debug Section -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 px-6 py-4 border-b border-blue-200 dark:border-blue-700 transition-colors duration-300">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-lg transition-colors duration-300">
+                                <i class="fas fa-bug text-blue-600 dark:text-blue-400"></i>
+                            </div>
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">调试信息</h2>
+                        </div>
+                        <button onclick="clearDebugInfo()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-6 space-y-4">
+                    <!-- IR Receiver Button -->
+                    <button id="irReceiverBtn" onclick="toggleIRReceiver()" class="w-full px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium text-lg shadow-lg hover:shadow-xl">
+                        <i id="irReceiverIcon" class="fas fa-wifi mr-2"></i>
+                        <span id="irReceiverText">接收红外信号</span>
+                    </button>
+
+                    <!-- Debug Info Display -->
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 opacity-50 rounded-lg"></div>
+                        <div id="debugInfo" class="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-blue-200 dark:border-blue-700 rounded-lg p-4 font-mono text-sm max-h-64 overflow-y-auto text-gray-900 dark:text-gray-100 transition-colors duration-300">
+                            点击"接收红外信号"开始录制...
+                        </div>
+                    </div>
+                    
+                    <!-- Signal Status -->
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 transition-colors duration-300">
+                            <div class="text-2xl font-bold text-gray-900 dark:text-gray-100" id="signalCount">0</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">信号总数</div>
+                        </div>
+                        <div class="bg-green-50 dark:bg-green-900 rounded-lg p-3 transition-colors duration-300">
+                            <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="boundCount">0</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">已绑定</div>
+                        </div>
+                        <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-3 transition-colors duration-300 relative">
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="releaseKeyCount">0</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">回弹键</div>
+                            <div class="mt-1 text-xs font-mono text-blue-700 dark:text-blue-300 truncate" id="releaseKeySignal" title="">未检测</div>
+                            <button onclick="clearReleaseKey()" id="clearReleaseKeyBtn" class="absolute top-1 right-1 w-5 h-5 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors hidden" title="清除回弹键">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Section: Bindings -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-colors duration-300">
+            <div class="bg-gradient-to-r from-purple-50 to-pink-100 dark:from-purple-900 dark:to-pink-900 px-6 py-4 border-b border-purple-200 dark:border-purple-700 transition-colors duration-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center justify-center w-8 h-8 bg-purple-100 dark:bg-purple-900 rounded-lg transition-colors duration-300">
+                            <i class="fas fa-link text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">信号绑定信息</h2>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="exportBindings()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors" title="导出绑定">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="importBindings()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors" title="导入绑定">
+                            <i class="fas fa-upload"></i>
+                        </button>
+                        <button onclick="clearAllBindings()" class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors" title="清空所有绑定">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <!-- JSON Output -->
+                <div class="mb-4">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 opacity-50 rounded-lg"></div>
+                        <pre id="bindingsJSON" class="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-purple-200 dark:border-purple-700 rounded-lg p-4 font-mono text-sm max-h-96 overflow-auto text-gray-900 dark:text-gray-100 transition-colors duration-300"></pre>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="text-center py-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full mb-4 transition-colors duration-300">
+                        <i class="fas fa-inbox text-2xl text-gray-400 dark:text-gray-500"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">暂无绑定信息</h3>
+                    <p class="text-gray-500 dark:text-gray-400">点击"接收红外信号"然后点击遥控器按键进行绑定</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-12 bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">系统信息</h4>
+                    <div class="space-y-2 text-sm text-gray-400">
+                        <div>版本: v1.0.0</div>
+                        <div>设备: 树莓派 5</div>
+                        <div>状态: <span class="text-green-400">在线</span></div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">快速操作</h4>
+                    <div class="space-y-2">
+                        <button onclick="showHelp()" class="block text-sm text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-question-circle mr-1"></i> 使用帮助
+                        </button>
+                        <button onclick="showSettings()" class="block text-sm text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-cog mr-1"></i> 系统设置
+                        </button>
+                        <button onclick="showAbout()" class="block text-sm text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-info-circle mr-1"></i> 关于系统
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">快捷键</h4>
+                    <div class="space-y-1 text-sm text-gray-400">
+                        <div><kbd class="px-2 py-1 bg-gray-700 rounded">Space</kbd> 接收红外信号</div>
+                        <div><kbd class="px-2 py-1 bg-gray-700 rounded">R</kbd> 重启服务</div>
+                        <div><kbd class="px-2 py-1 bg-gray-700 rounded">H</kbd> 显示帮助</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
+                <p>&copy; 2025 苹果A1294遥控器红外信号录制系统. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 transform translate-x-full transition-transform duration-300 ease-out z-50">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex items-center space-x-3 min-w-[300px] border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+            <div id="toastIcon" class="flex-shrink-0"></div>
+            <div class="flex-1">
+                <div id="toastTitle" class="text-sm font-medium text-gray-900 dark:text-gray-100"></div>
+                <div id="toastMessage" class="text-sm text-gray-500 dark:text-gray-400"></div>
+            </div>
+            <button onclick="hideToast()" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentBindings = {};
+        let releaseKeySignal = null; // 回弹键信号值
+        let svgScale = 1;
+        let isDarkMode = false;
+        let lastReceivedSignal = null; // 存储最后接收到的红外信号
+        let receivedSignals = []; // 存储所有接收到的信号历史
+        let isReceiving = false; // 是否正在接收红外信号
+        let receivingAborted = false; // 是否中止接收
+
+        // 用于检测回弹键的变量
+        let previousSignal = null; // 上一个信号
+        let previousSignalTime = 0; // 上一个信号的时间
+        const RELEASE_KEY_THRESHOLD = 300; // 300ms内的连续信号判定为回弹键
+        const MAX_SIGNALS_HISTORY = 1000; // 最多保存1000个信号历史，防止内存溢出
+        
+        // 按键位置信息（与后端保持一致）
+        const buttonPositions = {
+            'up': {center: [132, 120], radius: 15, label: '上', icon: 'fa-arrow-up'},
+            'down': {center: [131, 316], radius: 15, label: '下', icon: 'fa-arrow-down'},
+            'left': {center: [34, 217], radius: 15, label: '左', icon: 'fa-arrow-left'},
+            'right': {center: [229, 218], radius: 15, label: '右', icon: 'fa-arrow-right'},
+            'enter': {center: [131, 218], radius: 52, label: '确认', icon: 'fa-circle'},
+            'menu': {center: [68, 402], radius: 47, label: '菜单', icon: 'fa-bars'},
+            'play_pause': {center: [194, 402], radius: 47, label: '播放/暂停', icon: 'fa-play'}
+        };
+        
+        // Toast 通知系统
+        function showToast(title, message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // 设置图标
+            const icons = {
+                success: '<i class="fas fa-check-circle text-green-500 text-xl"></i>',
+                error: '<i class="fas fa-exclamation-circle text-red-500 text-xl"></i>',
+                warning: '<i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>',
+                info: '<i class="fas fa-info-circle text-blue-500 text-xl"></i>'
+            };
+            
+            toastIcon.innerHTML = icons[type] || icons.info;
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            // 显示 toast
+            toast.classList.remove('translate-x-full');
+            
+            // 自动隐藏
+            setTimeout(() => {
+                hideToast();
+            }, 3000);
+        }
+        
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('translate-x-full');
+        }
+        
+        // 初始化页面
+        async function init() {
+            try {
+                // 先加载主题偏好
+                loadThemePreference();
+
+                await loadSVG();
+                await loadBindings();
+                updateDebugInfo('系统初始化完成，等待操作...');
+                updateStatistics();
+                showToast('系统就绪', '所有组件加载完成', 'success');
+            } catch (error) {
+                console.error('初始化失败:', error);
+                showToast('初始化失败', error.message, 'error');
+            }
+        }
+        
+        // 加载SVG
+        async function loadSVG() {
+            try {
+                const response = await fetch('/api/svg_data');
+                const data = await response.json();
+                const container = document.getElementById('svgContainer');
+                container.innerHTML = data.svg;
+
+                // 设置容器样式
+                container.style.position = 'relative';
+                container.style.overflow = 'visible';
+
+                const svg = container.querySelector('svg');
+                if (svg) {
+                    svg.style.width = '100%';
+                    svg.style.maxWidth = '262px';
+                    svg.style.height = 'auto';
+                    svg.style.cursor = 'default'; // 默认不显示可点击状态
+                    svg.style.position = 'relative';
+                    svg.style.zIndex = '1'; // SVG在底层
+                    svg.classList.add('rounded-lg');
+
+                    // 延迟创建按键覆盖层（点击事件在overlay上，不在SVG上）
+                    setTimeout(createButtonOverlays, 100);
+                }
+            } catch (error) {
+                throw new Error('加载SVG失败: ' + error.message);
+            }
+        }
+        
+        // 创建按键覆盖层
+        function createButtonOverlays() {
+            const container = document.getElementById('svgContainer');
+            const svg = container.querySelector('svg');
+            
+            if (!svg) return;
+            
+            // 计算缩放比例
+            const svgRect = svg.getBoundingClientRect();
+            svgScale = svgRect.width / 262;
+            
+            Object.entries(buttonPositions).forEach(([buttonName, info]) => {
+                // 创建按键覆盖层
+                const overlay = document.createElement('div');
+                overlay.className = 'button-overlay absolute rounded-full cursor-pointer';
+                overlay.id = `overlay-${buttonName}`;
+                overlay.dataset.buttonName = buttonName; // 存储按钮名称
+                overlay.style.width = `${info.radius * 2 * svgScale}px`;
+                overlay.style.height = `${info.radius * 2 * svgScale}px`;
+                overlay.style.left = `${info.center[0] * svgScale - info.radius * svgScale}px`;
+                overlay.style.top = `${info.center[1] * svgScale - info.radius * svgScale}px`;
+                overlay.style.pointerEvents = 'auto'; // 允许按键区域响应鼠标事件
+                overlay.style.position = 'absolute'; // 确保绝对定位
+                overlay.style.cursor = 'pointer'; // 显示可点击状态
+                overlay.style.zIndex = '10'; // 确保在SVG上层
+                overlay.style.overflow = 'visible'; // 允许波纹扩散到外面
+
+                // 设置默认透明背景
+                overlay.style.backgroundColor = 'transparent';
+
+                // 绑定点击事件到overlay
+                overlay.addEventListener('click', (e) => handleButtonClick(buttonName, e));
+
+                container.appendChild(overlay);
+            });
+            
+            updateButtonStates();
+        }
+        
+        // 切换红外接收状态
+        function toggleIRReceiver() {
+            if (isReceiving) {
+                stopIRReceiver();
+            } else {
+                startIRReceiver();
+            }
+        }
+
+        // 开始接收红外信号
+        function startIRReceiver() {
+            isReceiving = true;
+            receivingAborted = false;
+            previousSignal = null;  // 重置上一个信号
+            previousSignalTime = 0;  // 重置信号时间
+
+            // 更新按钮样式
+            const btn = document.getElementById('irReceiverBtn');
+            const icon = document.getElementById('irReceiverIcon');
+            const text = document.getElementById('irReceiverText');
+
+            btn.className = 'w-full px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-all font-medium text-lg shadow-lg hover:shadow-xl';
+            icon.className = 'fas fa-stop-circle mr-2';
+            text.textContent = '停止接收';
+
+            showToast('开始接收', '正在监听红外信号...', 'info');
+
+            // 开始接收循环
+            receiveLoop();
+        }
+
+        // 停止接收红外信号
+        function stopIRReceiver() {
+            isReceiving = false;
+            receivingAborted = true;
+
+            // 更新按钮样式
+            const btn = document.getElementById('irReceiverBtn');
+            const icon = document.getElementById('irReceiverIcon');
+            const text = document.getElementById('irReceiverText');
+
+            btn.className = 'w-full px-6 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-medium text-lg shadow-lg hover:shadow-xl';
+            icon.className = 'fas fa-wifi mr-2';
+            text.textContent = '接收红外信号';
+
+            showToast('停止接收', '已停止监听红外信号', 'info');
+        }
+
+        // 接收循环
+        async function receiveLoop() {
+            while (isReceiving && !receivingAborted) {
+                try {
+                    console.log('Waiting for IR signal...');
+
+                    // 调用后端API真实接收红外信号
+                    const response = await fetch('/api/wait_for_ir_signal', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({timeout: 10.0})
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('接收信号失败');
+                    }
+
+                    const irData = await response.json();
+
+                    // 检查是否有错误
+                    if (irData.error) {
+                        console.log('No signal received, continuing...');
+                        continue;
+                    }
+
+                    console.log('IR signal received:', irData);
+
+                    // 检测回弹键：如果与上一个信号在短时间内接收到，则第二个信号是回弹键
+                    const currentTime = Date.now();
+                    let isCurrentSignalReleaseKey = false;
+
+                    if (previousSignal && previousSignal !== irData.signal) {
+                        const timeDiff = currentTime - previousSignalTime;
+                        if (timeDiff < RELEASE_KEY_THRESHOLD) {
+                            // 第二个信号是回弹键
+                            releaseKeySignal = irData.signal;
+                            isCurrentSignalReleaseKey = true;
+                            console.log('检测到回弹键:', releaseKeySignal, '时间间隔:', timeDiff, 'ms');
+                            console.log('可绑定信号（第一个信号）:', previousSignal);
+                            updateStatistics();
+                            updateBindingsList(); // 更新JSON显示
+
+                            // 将 lastReceivedSignal 设置为第一个信号（可绑定的信号）
+                            lastReceivedSignal = {
+                                signal: previousSignal,
+                                timestamp: previousSignalTime / 1000,
+                                button: `IR_${previousSignal}`
+                            };
+                        }
+                    }
+
+                    // 如果当前信号不是回弹键，则保存为最后接收的信号
+                    if (!isCurrentSignalReleaseKey) {
+                        lastReceivedSignal = irData;
+                        previousSignal = irData.signal;
+                        previousSignalTime = currentTime;
+                    }
+
+                    receivedSignals.push(irData);
+
+                    // 限制信号历史数组大小，防止内存溢出
+                    if (receivedSignals.length > MAX_SIGNALS_HISTORY) {
+                        receivedSignals.shift(); // 移除最旧的信号
+                    }
+
+                    // 更新调试信息显示
+                    const timestamp = new Date().toLocaleTimeString();
+                    const debugInfo = document.getElementById('debugInfo');
+
+                    // 检查是否是回弹键信号
+                    const isReleaseKey = releaseKeySignal && irData.signal === releaseKeySignal;
+                    const signalColor = isReleaseKey ? 'text-green-600 dark:text-green-400 font-bold' : 'text-gray-900 dark:text-gray-100 font-semibold';
+                    const borderColor = isReleaseKey ? 'border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/30' : 'border-gray-200 dark:border-gray-600';
+
+                    const signalHtml = `
+                        <div class="mb-2 pb-2 border-b ${borderColor}">
+                            <div class="text-gray-600 dark:text-gray-400 text-xs">[${timestamp}]${isReleaseKey ? ' <span class="text-green-600 dark:text-green-400 font-bold">[回弹键]</span>' : ''}</div>
+                            <div class="${signalColor}">信号: ${irData.signal}</div>
+                        </div>
+                    `;
+
+                    // 将新信号添加到顶部
+                    debugInfo.innerHTML = signalHtml + debugInfo.innerHTML;
+
+                    // 更新统计
+                    document.getElementById('signalCount').textContent = receivedSignals.length;
+
+                    // 检查是否是回弹键信号
+                    if (isReleaseKey) {
+                        // 如果是回弹键，在回弹键统计区域显示波纹
+                        showReleaseKeyRipple();
+                    } else {
+                        // 否则检查信号是否已绑定到某个按键，如果是则显示波纹
+                        const boundButtons = findAllButtonsBySignal(irData.signal);
+                        if (boundButtons.length > 0) {
+                            boundButtons.forEach(buttonName => {
+                                highlightButton(buttonName);
+                            });
+                        }
+                    }
+
+                    // 显示Toast
+                    showToast('信号接收', irData.signal, 'success');
+
+                } catch (error) {
+                    console.error('接收信号出错:', error);
+                    if (isReceiving) {
+                        // 只在仍在接收状态时显示错误
+                        showToast('接收错误', error.message, 'error');
+                    }
+                    // 等待1秒后继续
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                // 检查是否被中止
+                if (receivingAborted) {
+                    break;
+                }
+            }
+        }
+
+        // 处理按钮点击
+        async function handleButtonClick(buttonName, event) {
+            console.log('Button clicked:', buttonName);
+
+            // 高亮显示被点击的按键
+            highlightButton(buttonName);
+
+            // 检查是否已绑定：如果已绑定则解绑
+            if (currentBindings[buttonName]) {
+                try {
+                    await unbindSignal(buttonName);
+                    showToast('解绑成功', `${buttonName} 已解除绑定`, 'success');
+                } catch (error) {
+                    console.error('解绑失败:', error);
+                    showToast('解绑失败', error.message, 'error');
+                }
+                return;
+            }
+
+            // 检查是否有接收到的信号
+            if (!lastReceivedSignal) {
+                showToast('未接收到信号', '请先点击"接收红外信号"按钮', 'warning');
+                return;
+            }
+
+            // 检查是否尝试绑定回弹键信号
+            if (releaseKeySignal && lastReceivedSignal.signal === releaseKeySignal) {
+                showToast('无法绑定', '回弹键信号不能绑定到按钮', 'warning');
+                return;
+            }
+
+            try {
+                // 使用最后接收到的信号进行绑定
+                await bindSignal(buttonName, lastReceivedSignal.signal);
+
+                showToast('绑定成功', `${buttonName} 已绑定信号 ${lastReceivedSignal.signal}`, 'success');
+            } catch (error) {
+                console.error('绑定失败:', error);
+                showToast('绑定失败', error.message, 'error');
+            }
+        }
+        
+        // 高亮显示按键
+        function highlightButton(buttonName) {
+            console.log('Highlighting button:', buttonName);
+            
+            const overlay = document.getElementById(`overlay-${buttonName}`);
+            if (overlay) {
+                console.log('Overlay found:', overlay);
+                console.log('Overlay dimensions:', overlay.offsetWidth, 'x', overlay.offsetHeight);
+                console.log('Overlay position:', overlay.offsetLeft, ',', overlay.offsetTop);
+                
+                // 移除所有激活状态
+                document.querySelectorAll('.button-overlay').forEach(o => {
+                    o.classList.remove('animate-pulse-flash');
+                });
+                
+                // 创建波纹效果
+                console.log('Creating ripple effect');
+                createRippleEffect(overlay);
+                
+                // 添加原有的脉冲动画效果
+                overlay.classList.add('animate-pulse-flash');
+                
+                // 动画结束后移除类
+                setTimeout(() => {
+                    overlay.classList.remove('animate-pulse-flash');
+                }, 600);
+            } else {
+                console.log('Overlay not found for button:', buttonName);
+            }
+        }
+        
+        // 创建波纹效果
+        function createRippleEffect(element) {
+            console.log('Creating ripple effect for element:', element.id);
+
+            // 获取按键元素的尺寸
+            const elementWidth = element.offsetWidth;
+            const elementHeight = element.offsetHeight;
+            const size = Math.max(elementWidth, elementHeight);
+
+            console.log('Element size:', elementWidth, 'x', elementHeight, 'Ripple size:', size);
+
+            // 创建波纹元素
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple-effect';
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.border = '3px solid rgba(59, 130, 246, 0.8)';
+            ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+            ripple.style.transform = 'translate(-50%, -50%) scale(1)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.zIndex = '100';
+            ripple.style.left = '50%';
+            ripple.style.top = '50%';
+            ripple.style.width = size + 'px';
+            ripple.style.height = size + 'px';
+            ripple.style.opacity = '1';
+            ripple.style.boxSizing = 'border-box';
+
+            console.log('Ripple element created:', ripple);
+
+            // 添加动画
+            ripple.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+
+            // 添加到按键覆盖层中
+            element.appendChild(ripple);
+            console.log('Ripple appended to element, child count:', element.children.length);
+
+            // 触发动画（向外扩散2.5倍并淡出）
+            setTimeout(() => {
+                console.log('Triggering ripple animation');
+                ripple.style.transform = 'translate(-50%, -50%) scale(2.5)';
+                ripple.style.opacity = '0';
+            }, 10);
+
+            // 动画结束后移除波纹元素
+            setTimeout(() => {
+                if (ripple.parentNode) {
+                    console.log('Removing ripple element');
+                    ripple.parentNode.removeChild(ripple);
+                }
+            }, 650);
+        }
+
+        // 在回弹键统计区域显示波纹
+        function showReleaseKeyRipple() {
+            const releaseKeyCard = document.getElementById('releaseKeyCount').parentElement;
+
+            // 创建绿色波纹元素
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '8px';
+            ripple.style.border = '3px solid rgba(34, 197, 94, 0.8)'; // green-500
+            ripple.style.backgroundColor = 'rgba(34, 197, 94, 0.3)';
+            ripple.style.transform = 'scale(1)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.zIndex = '10';
+            ripple.style.left = '0';
+            ripple.style.top = '0';
+            ripple.style.right = '0';
+            ripple.style.bottom = '0';
+            ripple.style.opacity = '1';
+            ripple.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+
+            // 确保父元素有 relative 定位
+            const originalPosition = releaseKeyCard.style.position;
+            releaseKeyCard.style.position = 'relative';
+
+            releaseKeyCard.appendChild(ripple);
+
+            // 触发动画
+            setTimeout(() => {
+                ripple.style.transform = 'scale(1.1)';
+                ripple.style.opacity = '0';
+            }, 10);
+
+            // 动画结束后移除
+            setTimeout(() => {
+                if (ripple.parentNode) {
+                    ripple.parentNode.removeChild(ripple);
+                }
+                releaseKeyCard.style.position = originalPosition;
+            }, 650);
+        }
+        
+        // 更新按键状态
+        function updateButtonStates() {
+            Object.keys(buttonPositions).forEach(buttonName => {
+                const overlay = document.getElementById(`overlay-${buttonName}`);
+                if (overlay) {
+                    if (currentBindings[buttonName]) {
+                        overlay.style.backgroundColor = 'rgba(16, 185, 129, 0.1)'; // green-500/10
+                    } else {
+                        overlay.style.backgroundColor = 'transparent'; // 0%透明度
+                    }
+                }
+            });
+        }
+        
+        // 更新调试信息
+        function updateDebugInfo(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const debugInfo = document.getElementById('debugInfo');
+            debugInfo.innerHTML = `<div class="text-gray-600 dark:text-gray-400">[${timestamp}]</div><div class="text-gray-900 dark:text-gray-100">${message}</div>`;
+        }
+        
+        // 更新统计信息
+        function updateStatistics() {
+            const signalCount = Object.keys(currentBindings).length;
+            document.getElementById('signalCount').textContent = receivedSignals.length;
+            document.getElementById('boundCount').textContent = signalCount;
+            document.getElementById('releaseKeyCount').textContent = releaseKeySignal ? 1 : 0;
+
+            // 更新回弹键信号显示
+            const releaseKeySignalEl = document.getElementById('releaseKeySignal');
+            const clearBtn = document.getElementById('clearReleaseKeyBtn');
+
+            if (releaseKeySignal) {
+                releaseKeySignalEl.textContent = releaseKeySignal;
+                releaseKeySignalEl.title = releaseKeySignal;
+                clearBtn.classList.remove('hidden');
+            } else {
+                releaseKeySignalEl.textContent = '未检测';
+                releaseKeySignalEl.title = '';
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        // 清除回弹键
+        function clearReleaseKey() {
+            if (confirm('确定要清除回弹键设置吗？')) {
+                releaseKeySignal = null;
+                previousSignal = null;
+                previousSignalTime = 0;
+                updateStatistics();
+                updateBindingsList();
+                showToast('已清除', '回弹键设置已清除，可重新检测', 'success');
+            }
+        }
+        
+        // 其他函数（保持原有逻辑，但添加Toast通知）
+        async function loadBindings() {
+            try {
+                const response = await fetch('/api/bindings');
+                currentBindings = await response.json();
+                updateBindingsList();
+                updateButtonStates();
+                updateStatistics();
+            } catch (error) {
+                console.error('加载绑定信息失败:', error);
+            }
+        }
+        
+        function updateBindingsList() {
+            const bindingsJSON = document.getElementById('bindingsJSON');
+            const emptyState = document.getElementById('emptyState');
+
+            if (Object.keys(currentBindings).length === 0) {
+                bindingsJSON.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            bindingsJSON.style.display = 'block';
+            emptyState.style.display = 'none';
+
+            // 构建包含回弹键信息的JSON对象
+            const outputData = {
+                bindings: currentBindings,
+                releaseKey: releaseKeySignal || null
+            };
+
+            // 格式化JSON输出
+            bindingsJSON.textContent = JSON.stringify(outputData, null, 2);
+        }
+        
+        // 绑定信号
+        async function bindSignal(button, signal) {
+            try {
+                const response = await fetch('/api/bind_signal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        button: button,
+                        signal: signal
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('绑定成功', `已将信号绑定到 ${button} 按键`, 'success');
+                    await loadBindings();
+                } else {
+                    showToast('绑定失败', '请重试', 'error');
+                }
+            } catch (error) {
+                showToast('绑定失败', error.message, 'error');
+            }
+        }
+        
+        // 解绑信号
+        async function unbindSignal(button) {
+            try {
+                const response = await fetch('/api/unbind_signal', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        button: button
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    await loadBindings();
+                } else {
+                    showToast('解绑失败', '请重试', 'error');
+                }
+            } catch (error) {
+                showToast('解绑失败', error.message, 'error');
+            }
+        }
+
+
+        // 根据信号查找所有绑定的按键
+        function findAllButtonsBySignal(signal) {
+            const buttons = [];
+            for (const [buttonName, binding] of Object.entries(currentBindings)) {
+                if (binding.signal === signal) {
+                    buttons.push(buttonName);
+                }
+            }
+            return buttons;
+        }
+
+        // 删除单个绑定（保留此功能以防需要）
+        function deleteBinding(button) {
+            delete currentBindings[button];
+            updateBindingsList();
+            updateButtonStates();
+            updateStatistics();
+            showToast('删除成功', `已删除 ${button} 按键的绑定`, 'success');
+        }
+
+        // 测试模拟信号（用于没有真实硬件时的测试）
+        async function testSignal() {
+            try {
+                const response = await fetch('/api/simulate_ir_signal');
+                const irData = await response.json();
+
+                console.log('Test signal generated:', irData);
+
+                // 保存最后接收到的信号
+                lastReceivedSignal = irData;
+                receivedSignals.push(irData);
+
+                // 更新调试信息显示
+                const timestamp = new Date().toLocaleTimeString();
+                const debugInfo = document.getElementById('debugInfo');
+
+                // 检查是否是回弹键信号
+                const isReleaseKey = releaseKeySignal && irData.signal === releaseKeySignal;
+                const signalColor = isReleaseKey ? 'text-green-600 dark:text-green-400 font-bold' : 'text-gray-900 dark:text-gray-100 font-semibold';
+                const borderColor = isReleaseKey ? 'border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/30' : 'border-gray-200 dark:border-gray-600';
+
+                const signalHtml = `
+                    <div class="mb-2 pb-2 border-b ${borderColor}">
+                        <div class="text-gray-600 dark:text-gray-400 text-xs">[${timestamp}] <span class="text-orange-500 dark:text-orange-400">[测试]</span>${isReleaseKey ? ' <span class="text-green-600 dark:text-green-400 font-bold">[回弹键]</span>' : ''}</div>
+                        <div class="${signalColor}">信号: ${irData.signal}</div>
+                    </div>
+                `;
+
+                // 将新信号添加到顶部
+                debugInfo.innerHTML = signalHtml + debugInfo.innerHTML;
+
+                // 更新统计
+                document.getElementById('signalCount').textContent = receivedSignals.length;
+
+                showToast('测试信号', irData.signal, 'info');
+            } catch (error) {
+                console.error('生成测试信号失败:', error);
+                showToast('测试失败', error.message, 'error');
+            }
+        }
+        
+        function simulateKeyPress(button) {
+            if (buttonPositions[button]) {
+                const coords = buttonPositions[button].center;
+                const svg = document.querySelector('#svgContainer svg');
+                if (svg) {
+                    const event = new MouseEvent('click', {
+                        clientX: svg.getBoundingClientRect().left + coords[0] * svgScale,
+                        clientY: svg.getBoundingClientRect().top + coords[1] * svgScale
+                    });
+                    svg.dispatchEvent(event);
+                }
+            }
+        }
+        
+        function clearDebugInfo() {
+            document.getElementById('debugInfo').innerHTML = '调试信息已清空';
+        }
+        
+        function resetRemote() {
+            loadSVG();
+            showToast('遥控器已重置', '所有按键状态已恢复', 'info');
+        }
+        
+        function clearAllBindings() {
+            if (confirm('确定要清空所有绑定吗？此操作不可恢复。')) {
+                currentBindings = {};
+                updateBindingsList();
+                updateButtonStates();
+                updateStatistics();
+                showToast('清空成功', '所有绑定已删除', 'success');
+            }
+        }
+        
+        function exportBindings() {
+            const dataStr = JSON.stringify(currentBindings, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `remote-bindings-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            showToast('导出成功', '绑定信息已导出', 'success');
+        }
+        
+        function importBindings() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            currentBindings = JSON.parse(event.target.result);
+                            updateBindingsList();
+                            updateButtonStates();
+                            updateStatistics();
+                            showToast('导入成功', '绑定信息已导入', 'success');
+                        } catch (error) {
+                            showToast('导入失败', '文件格式错误', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+        
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const html = document.documentElement;
+
+            if (isDarkMode) {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+
+            // 更新图标
+            updateThemeIcon();
+            showToast('主题切换', isDarkMode ? '已切换到深色主题' : '已切换到浅色主题', 'info');
+        }
+
+        function updateThemeIcon() {
+            const themeBtn = document.querySelector('button[onclick="toggleTheme()"]');
+            if (themeBtn) {
+                const icon = themeBtn.querySelector('i');
+                if (icon) {
+                    icon.className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+                }
+            }
+        }
+
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            isDarkMode = savedTheme === 'dark' || (!savedTheme && prefersDark);
+
+            if (isDarkMode) {
+                document.documentElement.classList.add('dark');
+            }
+
+            updateThemeIcon();
+        }
+        
+        function showHelp() {
+            showToast('使用帮助', '请查看用户手册获取详细说明', 'info');
+        }
+        
+        function showSettings() {
+            showToast('系统设置', '设置功能正在开发中', 'info');
+        }
+        
+        function showAbout() {
+            showToast('关于系统', '苹果A1294遥控器红外信号录制系统 v1.0.0', 'info');
+        }
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleIRReceiver();
+                    break;
+                case 'r':
+                case 'R':
+                    showToast('重启服务', '服务重启中...', 'info');
+                    break;
+                case 'h':
+                case 'H':
+                    showHelp();
+                    break;
+            }
+        });
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(./service.sh restart:*)",
+      "Bash(./service.sh status:*)",
+      "Bash(./service.sh start:*)",
+      "Bash(systemctl status:*)",
+      "Bash(source:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(timeout 3 irw:*)",
+      "Bash(logs/app.log)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

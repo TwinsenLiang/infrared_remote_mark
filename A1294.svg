@@ -1,0 +1,17 @@
+<svg width="262" height="1001" viewBox="0 0 262 1001" xmlns="http://www.w3.org/2000/svg">
+  <!-- 基于轮廓的SVG生成 -->
+  <rect x="8" y="3" width="252" height="989" rx="25" ry="19" fill="#9c9c9c" />
+  <circle cx="131" cy="218" r="111" fill="#252525" />
+  <circle cx="132" cy="120" r="3" fill="#7f7f7f" />
+  <circle cx="131" cy="218" r="52" fill="#dddddd" />
+  <circle cx="34" cy="217" r="3" fill="#767676" />
+  <circle cx="34" cy="217" r="3" fill="#818181" />
+  <circle cx="229" cy="218" r="3" fill="#6d6d6d" />
+  <circle cx="131" cy="316" r="3" fill="#878787" />
+  <circle cx="194" cy="402" r="47" fill="#202020" />
+  <circle cx="68" cy="402" r="47" fill="#252525" />
+  <polygon points="186.95,392.6 186.95,411.4 201.04999999999998,402" fill="white" />
+  <rect x="198.7" y="392.6" width="3.525" height="18.8" fill="white" />
+  <rect x="205.045" y="392.6" width="3.525" height="18.8" fill="white" />
+  <text x="68" y="402" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="central">MENU</text>
+</svg>
